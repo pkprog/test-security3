@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/" access="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')"/>
+        <security:intercept-url pattern="/welcome" access="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')"/>
+        <security:intercept-url pattern="/admin" access="hasAnyRole('ROLE_ADMIN')"/>
+        <security:form-login login-page="/login"
+                             default-target-url="/welcome"
+                             authentication-failure-url="/login?error"
+                             username-parameter="username"
+                             password-parameter="password"/>
+        <security:logout logout-success-url="/login?logout"/>
+    </security:http>
+
+    <bean id="encoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+        <constructor-arg name="secret" value="security-test2"/>
+    </bean>
+
+    <bean id="userDetailsService" class="ru.pk.securitytest2.springsecuritypp.service.UserDetailsServiceImpl"/>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider user-service-ref="userDetailsService">
+            <security:password-encoder ref="encoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <security:debug/>
+
+</beans>

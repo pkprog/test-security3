@@ -21,6 +21,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userDao.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Пользователь " + username + " не найден в базе");
+        }
+
         Set<GrantedAuthority> authorities = new HashSet<>();
 
         for (Role role: user.getRoles()) {
